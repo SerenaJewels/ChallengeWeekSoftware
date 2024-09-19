@@ -19,7 +19,7 @@ int s;
 int nbytes=0;
 struct ifreq ifr;
 struct sockaddr_can addr;
-const char *ifname = "vcan0";
+const char *ifname = "can0";
 
 inline MotorFunctions::MotorFunctions() {
     if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) == -1) {
@@ -40,7 +40,7 @@ inline MotorFunctions::MotorFunctions() {
         printf("socket failed binding");
 	}
 
-    frame.can_id  = 0x140;
+    frame.can_id  = 0x141;
     frame.can_dlc = 8;
     frame.data[0] = 0x00;
     frame.data[1] = 0x00;
@@ -53,7 +53,7 @@ inline MotorFunctions::MotorFunctions() {
 };
 
 inline void MotorFunctions::stop() {
-    frame.can_id  = 0x140;
+    frame.can_id  = 0x141;
     frame.can_dlc = 8;
     frame.data[0] = 0x81;
     frame.data[1] = 0x00;
@@ -63,13 +63,12 @@ inline void MotorFunctions::stop() {
     frame.data[5] = 0x00;
     frame.data[6] = 0x00;
     frame.data[7] = 0x00;
-
     nbytes = write(s, &frame, sizeof(struct can_frame));
     printf("Wrote %d bytes\n", nbytes);
 };
 
-inline void MotorFunctions::rotate() {
-    frame.can_id  = 0x140;
+inline void MotorFunctions::rotate(int speed) {
+    frame.can_id  = 0x141;
     frame.can_dlc = 8;
     frame.data[0] = 0xA2;
     frame.data[1] = 0x00;

@@ -25,7 +25,7 @@ class MotorFunctions {
         // functions
         void stop();
 
-        void rotate();
+        void rotate(int dir);
 };
 
 #endif

@@ -14,7 +14,7 @@
 int main(void)
 {
 	int s;
-	int nbytes;
+	int nbytes = 0;
 	struct sockaddr_can addr;
 	struct can_frame frame;
 	struct ifreq ifr;

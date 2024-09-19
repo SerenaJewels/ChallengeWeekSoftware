@@ -17,8 +17,12 @@ int main(void)
 {
     MotorFunctions mf;
 
-    mf.rotate();
-    sleep(3);
+    mf.rotate(0x30);
+    sleep(5);
+    // mf.stop();
+    // sleep(5);
+    // mf.rotate(0xFF);
+    // sleep(5);
     mf.stop();
 	
 	return 0;
