@@ -19,7 +19,7 @@ int s;
 int nbytes=0;
 struct ifreq ifr;
 struct sockaddr_can addr;
-const char *ifname = "can0";
+const char *ifname = "vcan0";
 
 inline MotorFunctions::MotorFunctions() {
     if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) == -1) {
@@ -67,17 +67,55 @@ inline void MotorFunctions::stop() {
     printf("Wrote %d bytes\n", nbytes);
 };
 
-inline void MotorFunctions::rotate(int speed) {
+inline void MotorFunctions::rotate(int speed, int dir) {
     frame.can_id  = 0x141;
     frame.can_dlc = 8;
     frame.data[0] = 0xA2;
     frame.data[1] = 0x00;
     frame.data[2] = 0x00;
     frame.data[3] = 0x00;
-    frame.data[4] = 0x10;
-    frame.data[5] = 0x27;
-    frame.data[6] = 0x00;
-    frame.data[7] = 0x00;
+    // frame.data[4] = 0x10;
+    // frame.data[5] = 0x27;
+    // frame.data[6] = 0x00;
+    // frame.data[7] = 0x00;
+    
+
+    // speed data
+    speed = dir ? -speed : speed;
+
+    if (speed > 16777216) {
+        frame.data[7] = speed % 16777216;
+        speed = speed - frame.data[7];
+    } else {
+        frame.data[7] = 0x00;
+    }
+
+    if (speed > 65536) {
+        frame.data[6] = speed % 65536;
+        speed = speed - frame.data[6];
+    } else {
+        frame.data[6] = 0x00;
+    }
+
+    if (speed > 256) {
+        frame.data[5] = speed % 256;
+        speed = speed - frame.data[6];
+    } else {
+        frame.data[5] = 0x00;
+    }
+
+    frame.data[4] = speed;
+
+    printf("\n%d %d %d %d %d %d %d %d\n", frame.data[0], frame.data[1], frame.data[2], frame.data[3], frame.data[4], frame.data[5], frame.data[6], frame.data[7]);
+
+    // frame.data[0] = 0xA2;
+    // frame.data[1] = 0x00;
+    // frame.data[2] = 0x00;
+    // frame.data[3] = 0x00;
+    // frame.data[4] = 0x10;
+    // frame.data[5] = 0x27;
+    // frame.data[6] = 0x00;
+    // frame.data[7] = 0x00;
 
     nbytes = write(s, &frame, sizeof(struct can_frame));
     printf("Wrote %d bytes\n", nbytes);
